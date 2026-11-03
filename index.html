@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inato Bites - Digital Stamp Card</title>
   
-  <!-- Mobile Home Screen App Icon -->
   <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
@@ -60,7 +59,6 @@
     .brand-title { font-size: 26px; font-weight: 900; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .brand-subtitle { font-size: 12px; margin-top: 2px; font-weight: 600; opacity: 0.95; }
     
-    /* Centered Profile Section */
     .profile-section {
       display: flex;
       flex-direction: column;
@@ -69,8 +67,8 @@
       margin: 4px 0 2px 0;
     }
     .avatar-container {
-      width: 250px;
-      height: 250px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: #FFE082;
       border: 3px solid var(--primary);
@@ -88,11 +86,16 @@
       50% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
     }
-    .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-    .profile-name { font-size: 50px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
-    .customer-id-tag { font-size: 30px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
+    /* Scaled and non-stretched avatar image */
+    .avatar-container img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      object-position: center; 
+    }
+    .profile-name { font-size: 20px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
+    .customer-id-tag { font-size: 11px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
 
-    /* Stamp Card */
     .card {
       background: var(--card-bg);
       border-radius: 24px;
@@ -153,11 +156,9 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: transform 0.1s;
     }
     .btn:active { transform: scale(0.97); }
 
-    /* Floating stamp notification banner */
     #stamp-notification {
       position: fixed;
       top: -100px;
@@ -178,7 +179,6 @@
     }
     #stamp-notification.show { top: 20px; }
 
-    /* Modals */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 20px; z-index: 100; backdrop-filter: blur(4px); }
     .modal-content { background: white; border-radius: 28px; padding: 28px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
     .modal-input { width: 100%; padding: 12px; border: 2px solid #FFE082; border-radius: 12px; font-size: 16px; margin: 12px 0; text-align: center; }
@@ -188,7 +188,6 @@
 </head>
 <body>
 
-  <!-- Floating Notification Banner -->
   <div id="stamp-notification">🎉 +1 Stamp Added! Keep crunching! 🍢</div>
 
   <div class="app-container">
@@ -197,7 +196,6 @@
       <div class="brand-subtitle">Collect 10 Stamps for a FREE Treats Order!</div>
     </div>
 
-    <!-- Centered Profile Section (Bigger Avatar, Name Below) -->
     <div class="profile-section">
       <div class="avatar-container" onclick="openProfileModal()" title="Tap to edit profile">
         <img id="profile-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 24 24' fill='%23FF5722'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="Avatar">
@@ -206,7 +204,6 @@
       <div><span class="customer-id-tag" id="display-cust-id" onclick="openProfileModal()">ID: --- ✏️</span></div>
     </div>
 
-    <!-- Stamp Card Grid Box -->
     <div class="card">
       <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;" id="status-text">0 / 10 Stamps Completed</div>
       <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
@@ -216,7 +213,6 @@
     <button class="btn" onclick="openQRModal()"><span>📱 Show QR Code to Staff</span></button>
   </div>
 
-  <!-- QR Modal -->
   <div class="modal" id="qr-modal">
     <div class="modal-content">
       <h3 style="margin:0 0 8px 0; color:var(--dark);">Scan at Counter</h3>
@@ -226,7 +222,6 @@
     </div>
   </div>
 
-  <!-- Profile Setup Modal -->
   <div class="modal" id="profile-modal">
     <div class="modal-content">
       <h3 style="margin:0 0 8px 0; color:var(--primary);">Your Stamp Card Profile</h3>
@@ -234,7 +229,7 @@
       
       <div style="margin: 14px 0;">
         <div style="width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; border: 3px solid var(--primary); background:#FFE082;" id="modal-avatar-preview-container">
-          <img id="modal-avatar-preview" src="" style="width:100%; height:100%; object-fit:cover;" alt="Preview">
+          <img id="modal-avatar-preview" src="" style="width:100%; height:100%; object-fit:cover; object-position:center;" alt="Preview">
         </div>
         <button class="btn" style="padding: 10px 14px; font-size: 13px; width: auto; display: inline-block; background:#FFB300; color:var(--dark);" onclick="triggerCameraInput()">📷 Take Selfie / Upload Photo</button>
         <input type="file" id="camera-file-input" accept="image/*" capture="user" style="display:none;" onchange="handleImageUpload(event)">
@@ -245,7 +240,6 @@
     </div>
   </div>
 
-  <!-- Reward Modal (Bigger overlay & references Ate Genie Rose) -->
   <div class="modal" id="reward-modal">
     <div class="modal-content" style="max-width: 410px; padding: 32px 24px;">
       <div style="font-size: 42px; margin-bottom: 4px;">🏆</div>
@@ -258,7 +252,6 @@
   </div>
 
   <script>
-    // Your verified Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBMrW2-PDfUtbekxv2_ze3ctp_-mjmzpAc",
       authDomain: "inatobites-af74b.firebaseapp.com",
@@ -294,6 +287,7 @@
         if (savedAvatar) {
           document.getElementById('profile-avatar').src = savedAvatar;
           document.getElementById('modal-avatar-preview').src = savedAvatar;
+          tempAvatarBase64 = savedAvatar;
         }
       }
       return id;
@@ -301,6 +295,7 @@
 
     const custId = initCustomer();
 
+    // Listen to Firebase Realtime Database for stamps
     db.ref('stamps/' + custId).on('value', (snapshot) => {
       const count = snapshot.val() || 0;
       if (previousStampsCount !== null && count > previousStampsCount) {
@@ -327,9 +322,7 @@
       playPopSFX();
       const banner = document.getElementById('stamp-notification');
       banner.classList.add('show');
-      setTimeout(() => {
-        banner.classList.remove('show');
-      }, 3000);
+      setTimeout(() => { banner.classList.remove('show'); }, 3000);
     }
 
     function render(count) {
@@ -372,10 +365,10 @@
           img.onload = function() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 150;
-            canvas.height = 150;
-            ctx.drawImage(img, 0, 0, 150, 150);
-            tempAvatarBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            canvas.width = 200;
+            canvas.height = 200;
+            ctx.drawImage(img, 0, 0, 200, 200);
+            tempAvatarBase64 = canvas.toDataURL('image/jpeg', 0.85);
             document.getElementById('modal-avatar-preview').src = tempAvatarBase64;
           };
           img.src = e.target.result;
@@ -387,10 +380,14 @@
     function saveProfile() {
       const name = document.getElementById('name-input').value.trim() || 'Street Food Fan';
       localStorage.setItem('inato_cust_name', name);
-      localStorage.setItem('inato_cust_avatar', tempAvatarBase64);
+      if(tempAvatarBase64) localStorage.setItem('inato_cust_avatar', tempAvatarBase64);
 
       document.getElementById('profile-name-display').innerText = name;
-      document.getElementById('profile-avatar').src = tempAvatarBase64;
+      if(tempAvatarBase64) document.getElementById('profile-avatar').src = tempAvatarBase64;
+      
+      // Sync profile info to Firebase so staff can see it
+      db.ref('profiles/' + custId).set({ name: name, avatar: tempAvatarBase64 });
+
       document.getElementById('profile-modal').style.display = 'none';
     }
 
