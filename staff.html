@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inato Bites - Staff Dashboard</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    :root {
+      --primary: #3F51B5;
+      --accent: #FF5722;
+      --bg: #ECEFF1;
+      --card-bg: #FFFFFF;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: #37474F;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .header {
+      background: linear-gradient(135deg, #263238, #37474F);
+      color: white;
+      padding: 16px;
+      border-radius: 20px;
+      text-align: center;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .btn-success { background: #4CAF50; }
+    .btn-danger { background: #F44336; }
+    .btn-warning { background: #FF9800; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #CFD8DC;
+      border-radius: 12px;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    #reader {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+    }
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      background: #263238;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 200;
+    }
+    .lock-box {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PIN Protection Lock Screen -->
+  <div class="lock-screen" id="lock-screen">
+    <div class="lock-box">
+      <h2 style="margin:0 0 6px 0; color:#263238;">Staff Portal 🔑</h2>
+      <p style="font-size:13px; color:#78909C; margin-bottom:16px;">Enter Owner PIN to unlock scanner</p>
+      <input type="password" id="pin-input" placeholder="Enter PIN (Default: 1234)" maxlength="6">
+      <button class="btn" onclick="verifyPin()">Unlock</button>
+      <div id="pin-error" style="color:red; font-size:12px; margin-top:8px; display:none;">Incorrect PIN! Try again.</div>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <div class="header">
+      <h2 style="margin:0;">Inato Bites Staff 🍢</h2>
+      <div style="font-size:12px; opacity:0.8; margin-top:4px;">Scanner & Customer Stamp Manager</div>
+    </div>
+
+    <!-- QR Camera Scanner Card -->
+    <div class="card">
+      <h3 style="margin:0 0 12px 0;">📷 Scan Customer QR</h3>
+      <div id="reader"></div>
+      <button class="btn btn-warning" id="toggle-cam-btn" onclick="toggleCamera()" style="margin-top:12px;">Start Camera</button>
+    </div>
+
+    <!-- Manual Customer Lookup Card -->
+    <div class="card">
+      <h3 style="margin:0 0 12px 0;">🔍 Manual Lookup / Action</h3>
+      <input type="text" id="cust-id-input" placeholder="e.g. IB-4829">
+      
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-success" onclick="addStamp()">+1 Stamp</button>
+        <button class="btn btn-danger" onclick="removeStamp()">-1 Stamp</button>
+      </div>
+      <button class="btn btn-warning" onclick="resetCard()" style="margin-top:8px;">🎁 Claim Reward & Reset</button>
+    </div>
+  </div>
+
+  <script>
+    const OWNER_PIN = "1234"; // 👈 Change your owner PIN here
+    const channel = new BroadcastChannel('inato_bites_stamps');
+    let html5QrCode = null;
+    let isCameraActive = false;
+
+    function verifyPin() {
+      const pin = document.getElementById('pin-input').value;
+      if (pin === OWNER_PIN) {
+        document.getElementById('lock-screen').style.display = 'none';
+      } else {
+        document.getElementById('pin-error').style.display = 'block';
+      }
+    }
+
+    function getStamps(custId) {
+      return parseInt(localStorage.getItem('inato_stamps_' + custId) || '0', 10);
+    }
+
+    function updateStamps(custId, newCount) {
+      const finalCount = Math.max(0, Math.min(10, newCount));
+      localStorage.setItem('inato_stamps_' + custId, finalCount);
+      
+      // Broadcast real-time update to Customer's tab/app
+      channel.postMessage({
+        type: 'STAMP_UPDATED',
+        customerId: custId,
+        stampCount: finalCount
+      });
+
+      alert(`Updated ${custId}: Now has ${finalCount} / 10 stamps!`);
+    }
+
+    function addStamp() {
+      const id = document.getElementById('cust-id-input').value.trim();
+      if (!id) return alert('Please enter a Customer ID or scan a QR code!');
+      updateStamps(id, getStamps(id) + 1);
+    }
+
+    function removeStamp() {
+      const id = document.getElementById('cust-id-input').value.trim();
+      if (!id) return alert('Please enter a Customer ID!');
+      updateStamps(id, getStamps(id) - 1);
+    }
+
+    function resetCard() {
+      const id = document.getElementById('cust-id-input').value.trim();
+      if (!id) return alert('Please enter a Customer ID!');
+      if (confirm(`Claim reward and reset stamp card for ${id}?`)) {
+        updateStamps(id, 0);
+      }
+    }
+
+    function toggleCamera() {
+      if (isCameraActive) {
+        stopCamera();
+      } else {
+        startCamera();
+      }
+    }
+
+    function startCamera() {
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        (decodedText) => {
+          document.getElementById('cust-id-input').value = decodedText;
+          addStamp();
+          stopCamera();
+        },
+        () => {}
+      ).then(() => {
+        isCameraActive = true;
+        document.getElementById('toggle-cam-btn').innerText = "Stop Camera";
+      }).catch(err => {
+        alert("Camera error: " + err);
+      });
+    }
+
+    function stopCamera() {
+      if (html5QrCode && isCameraActive) {
+        html5QrCode.stop().then(() => {
+          isCameraActive = false;
+          document.getElementById('toggle-cam-btn').innerText = "Start Camera";
+        });
+      }
+    }
+  </script>
+</body>
+</html>
 
