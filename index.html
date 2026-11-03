@@ -1,1 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inato Bites - Digital Stamp Card</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #FF5722;
+      --secondary: #FFB300;
+      --accent: #8BC34A;
+      --dark: #3E2723;
+      --bg: #FFF8E1;
+      --card-bg: #FFFFFF;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--dark);
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .header {
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary), #E64A19);
+      color: white;
+      padding: 18px 16px;
+      border-radius: 24px;
+      box-shadow: 0 8px 16px rgba(255, 87, 34, 0.25);
+    }
+    .brand-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin: 0;
+      letter-spacing: 0.5px;
+      text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+    }
+    .brand-subtitle {
+      font-size: 13px;
+      margin-top: 4px;
+      opacity: 0.95;
+      font-weight: 600;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+      border: 3px solid #FFE082;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .stamp-slot {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px dashed #FFB300;
+      background: #FFFDE7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      color: #9E9E9E;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .stamp-slot.stamped {
+      background: linear-gradient(135deg, var(--secondary), #FF8F00);
+      border: 2px solid #FF6F00;
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 179, 0, 0.4);
+      transform: scale(1.05);
+    }
+    .stamp-slot.reward-slot {
+      border-style: solid;
+      border-color: #E91E63;
+      background: #FCE4EC;
+      color: #E91E63;
+    }
+    .stamp-icon { font-size: 20px; }
+    .progress-bar {
+      height: 12px;
+      background: #E0E0E0;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 16px 0 8px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 6px 14px rgba(255, 87, 34, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .customer-id-box {
+      background: #F5F5F5;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #616161;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+    #qrcode { display: flex; justify-content: center; margin: 16px 0; }
+    #qrcode img { border: 8px solid white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .food-icons {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      font-size: 22px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="header">
+      <h1 class="brand-title">Inato Bites 🍢</h1>
+      <div class="brand-subtitle">Collect 10 Stamps for a FREE Treats Order!</div>
+      <div class="food-icons">🍢 🧀 🥟 🍟 🌭</div>
+    </div>
+
+    <div class="card">
+      <div class="customer-id-box">Customer ID: <span id="display-cust-id">---</span></div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+      <div style="font-size: 14px; font-weight: bold; margin-bottom: 12px;" id="status-text">0 / 10 Stamps Completed</div>
+
+      <div class="grid" id="stamp-grid"></div>
+    </div>
+
+    <button class="btn" onclick="openQRModal()">
+      <span>📱 Show QR to Staff</span>
+    </button>
+  </div>
+
+  <!-- QR Modal -->
+  <div class="modal" id="qr-modal">
+    <div class="modal-content">
+      <h3 style="margin:0 0 8px 0; color:var(--dark);">Scan at Counter</h3>
+      <p style="font-size:13px; color:#666; margin:0;">Show this QR code to Inato Bites staff to add a stamp!</p>
+      <div id="qrcode"></div>
+      <button class="btn" style="background:#757575;" onclick="closeQRModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Reward Complete Modal -->
+  <div class="modal" id="reward-modal">
+    <div class="modal-content">
+      <h2 style="color:var(--primary); margin:0 0 8px 0;">🎉 CONGRATULATIONS!</h2>
+      <p style="font-size:14px; font-weight:600; color:#424242;">You earned 10 stamps! Show your phone to staff to claim 1 FREE order of your choice:</p>
+      <ul style="text-align:left; font-size:14px; color:var(--dark); font-weight:bold; line-height:1.8;">
+        <li>🍢 Kikiam</li>
+        <li>🧀 Cheese Sticks</li>
+        <li>🥟 Siomai</li>
+        <li>🍟 French Fries</li>
+        <li>🌭 Hotdog Bites</li>
+      </ul>
+      <button class="btn" onclick="closeRewardModal()">Awesome!</button>
+    </div>
+  </div>
+
+  <script>
+    const STAMPS_REQUIRED = 10;
+    const icons = ['🍢', '🧀', '🥟', '🍟', '🌭', '🍢', '🧀', '🥟', '🍟', '🎁'];
+    const channel = new BroadcastChannel('inato_bites_stamps');
+
+    function getCustomerId() {
+      let id = localStorage.getItem('inato_cust_id');
+      if (!id) {
+        id = 'IB-' + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem('inato_cust_id', id);
+      }
+      return id;
+    }
+
+    function getStampCount() {
+      return parseInt(localStorage.getItem('inato_stamps_' + getCustomerId()) || '0', 10);
+    }
+
+    function saveStampCount(count) {
+      localStorage.setItem('inato_stamps_' + getCustomerId(), count);
+      render();
+    }
+
+    function playPopSFX() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      } catch(e) {}
+    }
+
+    function render() {
+      const custId = getCustomerId();
+      const count = getStampCount();
+      document.getElementById('display-cust-id').innerText = custId;
+      document.getElementById('status-text').innerText = `${count} / ${STAMPS_REQUIRED} Stamps Completed`;
+      document.getElementById('progress').style.width = (count / STAMPS_REQUIRED * 100) + '%';
+
+      const grid = document.getElementById('stamp-grid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= STAMPS_REQUIRED; i++) {
+        const slot = document.createElement('div');
+        slot.className = `stamp-slot ${i <= count ? 'stamped' : ''} ${i === 10 ? 'reward-slot' : ''}`;
+        
+        if (i <= count) {
+          slot.innerHTML = `<span class="stamp-icon">${icons[i-1]}</span>`;
+        } else {
+          slot.innerText = i === 10 ? '🎁' : i;
+        }
+        grid.appendChild(slot);
+      }
+    }
+
+    function openQRModal() {
+      document.getElementById('qrcode').innerHTML = '';
+      new QRCode(document.getElementById('qrcode'), {
+        text: getCustomerId(),
+        width: 180,
+        height: 180
+      });
+      document.getElementById('qr-modal').style.display = 'flex';
+    }
+
+    function closeQRModal() { document.getElementById('qr-modal').style.display = 'none'; }
+    function closeRewardModal() { document.getElementById('reward-modal').style.display = 'none'; }
+
+    // Real-time synchronization from Staff Scanner App
+    channel.onmessage = (event) => {
+      const { type, customerId, stampCount } = event.data;
+      if (customerId === getCustomerId()) {
+        const prevCount = getStampCount();
+        saveStampCount(stampCount);
+        playPopSFX();
+
+        if (stampCount === 10 && prevCount < 10) {
+          confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+          document.getElementById('reward-modal').style.display = 'flex';
+        }
+      }
+    };
+
+    render();
+  </script>
+</body>
+</html>
 
