@@ -143,16 +143,16 @@
   </div>
 
   <script>
-    // 👇 REPLACE WITH YOUR FIREBASE CONFIG //
-  const firebaseConfig = {
-  apiKey: "AIzaSyBMrW2-PDfUtbekxv2_ze3ctp_-mjmzpAc",
-  authDomain: "inatobites-af74b.firebaseapp.com",
-  databaseURL: "https://inatobites-af74b-default-rtdb.firebaseio.com",
-  projectId: "inatobites-af74b",
-  storageBucket: "inatobites-af74b.firebasestorage.app",
-  messagingSenderId: "155817016872",
-  appId: "1:155817016872:web:b3b39fd08f24c1b3183f1d"
-}; 
+    // Your verified Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMrW2-PDfUtbekxv2_ze3ctp_-mjmzpAc",
+      authDomain: "inatobites-af74b.firebaseapp.com",
+      databaseURL: "https://inatobites-af74b-default-rtdb.firebaseio.com",
+      projectId: "inatobites-af74b",
+      storageBucket: "inatobites-af74b.firebasestorage.app",
+      messagingSenderId: "155817016872",
+      appId: "1:155817016872:web:b3b39fd08f24c1b3183f1d"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -176,19 +176,6 @@
       const count = snapshot.val() || 0;
       render(count);
     });
-
-    function playPopSFX() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.frequency.setValueAtTime(440, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(); osc.stop(ctx.currentTime + 0.1);
-      } catch(e) {}
-    }
 
     function render(count) {
       document.getElementById('status-text').innerText = `${count} / ${STAMPS_REQUIRED} Stamps Completed`;
