@@ -5,93 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inato Bites - Staff Dashboard</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
-    :root {
-      --primary: #3F51B5;
-      --accent: #FF5722;
-      --bg: #ECEFF1;
-      --card-bg: #FFFFFF;
-    }
+    :root { --primary: #3F51B5; --bg: #ECEFF1; --card-bg: #FFFFFF; }
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body {
-      background-color: var(--bg);
-      color: #37474F;
-      margin: 0;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .app-container {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .header {
-      background: linear-gradient(135deg, #263238, #37474F);
-      color: white;
-      padding: 16px;
-      border-radius: 20px;
-      text-align: center;
-    }
-    .card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 8px;
-    }
-    .btn-success { background: #4CAF50; }
+    body { background-color: var(--bg); color: #37474F; margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
+    .header { background: linear-gradient(135deg, #263238, #37474F); color: white; padding: 16px; border-radius: 20px; text-align: center; }
+    .card { background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+    .btn { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: bold; font-size: 15px; cursor: pointer; width: 100%; margin-top: 8px; }
+    .btn-success { background: #4CAF50; font-size: 18px; }
     .btn-danger { background: #F44336; }
     .btn-warning { background: #FF9800; }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #CFD8DC;
-      border-radius: 12px;
-      font-size: 16px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    #reader {
-      width: 100%;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #000;
-    }
-    .lock-screen {
-      position: fixed;
-      inset: 0;
-      background: #263238;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      z-index: 200;
-    }
-    .lock-box {
-      background: white;
-      border-radius: 24px;
-      padding: 24px;
-      width: 100%;
-      max-width: 320px;
-      text-align: center;
-    }
+    input[type="text"], input[type="password"] { width: 100%; padding: 12px; border: 2px solid #CFD8DC; border-radius: 12px; font-size: 16px; text-align: center; margin-bottom: 10px; }
+    #reader { width: 100%; border-radius: 16px; overflow: hidden; background: #000; margin-bottom: 8px; }
+    .lock-screen { position: fixed; inset: 0; background: #263238; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
+    .lock-box { background: white; border-radius: 24px; padding: 24px; width: 100%; max-width: 320px; text-align: center; }
+    .scanned-customer-box { background: #E8F5E9; border: 2px solid #81C784; padding: 12px; border-radius: 14px; margin-bottom: 12px; font-weight: bold; color: #2E7D32; }
   </style>
 </head>
 <body>
@@ -100,92 +32,127 @@
   <div class="lock-screen" id="lock-screen">
     <div class="lock-box">
       <h2 style="margin:0 0 6px 0; color:#263238;">Staff Portal 🔑</h2>
-      <p style="font-size:13px; color:#78909C; margin-bottom:16px;">Enter Owner PIN to unlock scanner</p>
-      <input type="password" id="pin-input" placeholder="Enter PIN (Default: 1234)" maxlength="6">
+      <p style="font-size:13px; color:#78909C; margin-bottom:16px;">Enter Owner PIN</p>
+      <input type="password" id="pin-input" placeholder="PIN (Default: 1234)" maxlength="6">
       <button class="btn" onclick="verifyPin()">Unlock</button>
-      <div id="pin-error" style="color:red; font-size:12px; margin-top:8px; display:none;">Incorrect PIN! Try again.</div>
+      <div id="pin-error" style="color:red; font-size:12px; margin-top:8px; display:none;">Incorrect PIN!</div>
     </div>
   </div>
 
   <div class="app-container">
     <div class="header">
       <h2 style="margin:0;">Inato Bites Staff 🍢</h2>
-      <div style="font-size:12px; opacity:0.8; margin-top:4px;">Scanner & Customer Stamp Manager</div>
+      <div style="font-size:12px; opacity:0.8; margin-top:4px;">Scanner & Stamp Manager</div>
     </div>
 
     <!-- QR Camera Scanner Card -->
     <div class="card">
       <h3 style="margin:0 0 12px 0;">📷 Scan Customer QR</h3>
       <div id="reader"></div>
-      <button class="btn btn-warning" id="toggle-cam-btn" onclick="toggleCamera()" style="margin-top:12px;">Start Camera</button>
+      <button class="btn btn-warning" id="toggle-cam-btn" onclick="toggleCamera()">Start Camera Scanner</button>
     </div>
 
-    <!-- Manual Customer Lookup Card -->
+    <!-- Active Customer & Stamp Control Card -->
     <div class="card">
-      <h3 style="margin:0 0 12px 0;">🔍 Manual Lookup / Action</h3>
-      <input type="text" id="cust-id-input" placeholder="e.g. IB-4829">
-      
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-success" onclick="addStamp()">+1 Stamp</button>
-        <button class="btn btn-danger" onclick="removeStamp()">-1 Stamp</button>
+      <h3 style="margin:0 0 8px 0;">🎯 Customer Management</h3>
+      <div class="scanned-customer-box">
+        Loaded Customer: <span id="active-cust-id">None</span><br>
+        <span style="font-size:13px; font-weight:normal; color:#555;">Current Stamps: <span id="active-cust-stamps">0</span> / 10</span>
       </div>
-      <button class="btn btn-warning" onclick="resetCard()" style="margin-top:8px;">🎁 Claim Reward & Reset</button>
+
+      <input type="text" id="cust-id-input" placeholder="Or type Customer ID manually">
+      
+      <!-- Intentional Stamping Button -->
+      <button class="btn btn-success" onclick="addStamp()">➕ Click to Add +1 Stamp</button>
+      
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn btn-danger" onclick="removeStamp()">-1 Stamp</button>
+        <button class="btn btn-warning" onclick="resetCard()">Claim & Reset</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const OWNER_PIN = "1234"; // 👈 Change your owner PIN here
-    const channel = new BroadcastChannel('inato_bites_stamps');
+    // 👇 REPLACE WITH YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const OWNER_PIN = "1234";
     let html5QrCode = null;
     let isCameraActive = false;
+    let currentLoadedId = null;
+    let dbListenerRef = null;
 
     function verifyPin() {
-      const pin = document.getElementById('pin-input').value;
-      if (pin === OWNER_PIN) {
+      if (document.getElementById('pin-input').value === OWNER_PIN) {
         document.getElementById('lock-screen').style.display = 'none';
       } else {
         document.getElementById('pin-error').style.display = 'block';
       }
     }
 
-    function getStamps(custId) {
-      return parseInt(localStorage.getItem('inato_stamps_' + custId) || '0', 10);
-    }
+    // When customer ID is identified (via scan or manual typing)
+    function loadCustomer(id) {
+      currentLoadedId = id.trim();
+      document.getElementById('active-cust-id').innerText = currentLoadedId;
+      document.getElementById('cust-id-input').value = currentLoadedId;
 
-    function updateStamps(custId, newCount) {
-      const finalCount = Math.max(0, Math.min(10, newCount));
-      localStorage.setItem('inato_stamps_' + custId, finalCount);
-      
-      // Broadcast real-time update to Customer's tab/app
-      channel.postMessage({
-        type: 'STAMP_UPDATED',
-        customerId: custId,
-        stampCount: finalCount
+      // Listen to real-time stamps for this customer
+      if (dbListenerRef) dbListenerRef.off();
+      dbListenerRef = db.ref('stamps/' + currentLoadedId);
+      dbListenerRef.on('value', (snapshot) => {
+        const stamps = snapshot.val() || 0;
+        document.getElementById('active-cust-stamps').innerText = stamps;
       });
-
-      alert(`Updated ${custId}: Now has ${finalCount} / 10 stamps!`);
     }
 
+    document.getElementById('cust-id-input').addEventListener('input', (e) => {
+      if (e.target.value.length >= 4) loadCustomer(e.target.value);
+    });
+
+    // Intentional +1 Stamp Action
     function addStamp() {
-      const id = document.getElementById('cust-id-input').value.trim();
-      if (!id) return alert('Please enter a Customer ID or scan a QR code!');
-      updateStamps(id, getStamps(id) + 1);
+      if (!currentLoadedId) return alert('Please scan a customer QR code first!');
+      db.ref('stamps/' + currentLoadedId).once('value', (snapshot) => {
+        let currentStamps = snapshot.val() || 0;
+        if (currentStamps >= 10) {
+          if (!confirm("Customer already has 10 stamps and a reward! Reset card?")) return;
+          currentStamps = 0;
+        }
+        const newStamps = currentStamps + 1;
+        db.ref('stamps/' + currentLoadedId).set(newStamps);
+        alert(`Successfully added +1 stamp! Total: ${newStamps}/10`);
+      });
     }
 
     function removeStamp() {
-      const id = document.getElementById('cust-id-input').value.trim();
-      if (!id) return alert('Please enter a Customer ID!');
-      updateStamps(id, getStamps(id) - 1);
+      if (!currentLoadedId) return alert('No customer selected!');
+      db.ref('stamps/' + currentLoadedId).once('value', (snapshot) => {
+        let currentStamps = snapshot.val() || 0;
+        const newStamps = Math.max(0, currentStamps - 1);
+        db.ref('stamps/' + currentLoadedId).set(newStamps);
+        alert(`Removed 1 stamp. Total: ${newStamps}/10`);
+      });
     }
 
     function resetCard() {
-      const id = document.getElementById('cust-id-input').value.trim();
-      if (!id) return alert('Please enter a Customer ID!');
-      if (confirm(`Claim reward and reset stamp card for ${id}?`)) {
-        updateStamps(id, 0);
+      if (!currentLoadedId) return alert('No customer selected!');
+      if (confirm(`Claim reward and reset stamp card for ${currentLoadedId}?`)) {
+        db.ref('stamps/' + currentLoadedId).set(0);
+        alert('Card has been reset to 0 stamps!');
       }
     }
 
+    // Camera Scanner logic (Only identifies ID, does NOT auto-stamp)
     function toggleCamera() {
       if (isCameraActive) {
         stopCamera();
@@ -200,28 +167,26 @@
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 220, height: 220 } },
         (decodedText) => {
-          document.getElementById('cust-id-input').value = decodedText;
-          addStamp();
+          // SCAN RESULT: Identifies customer ID only!
+          loadCustomer(decodedText);
           stopCamera();
+          alert(`Customer identified: ${decodedText}. Review and click "+1 Stamp" to add stamp.`);
         },
         () => {}
       ).then(() => {
         isCameraActive = true;
         document.getElementById('toggle-cam-btn').innerText = "Stop Camera";
-      }).catch(err => {
-        alert("Camera error: " + err);
-      });
+      }).catch(err => { alert("Camera error: " + err); });
     }
 
     function stopCamera() {
       if (html5QrCode && isCameraActive) {
         html5QrCode.stop().then(() => {
           isCameraActive = false;
-          document.getElementById('toggle-cam-btn').innerText = "Start Camera";
+          document.getElementById('toggle-cam-btn').innerText = "Start Camera Scanner";
         });
       }
     }
   </script>
 </body>
 </html>
-
