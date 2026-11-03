@@ -91,6 +91,7 @@
     .profile-name { font-size: 20px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
     .customer-id-tag { font-size: 11px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
 
+    /* Games Header Bar */
     .games-header-bar {
       display: flex;
       justify-content: space-between;
@@ -201,12 +202,14 @@
     }
     #stamp-notification.show { top: 20px; }
 
+    /* Modals */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(4px); overflow-y: auto; }
     .modal-content { background: white; border-radius: 28px; padding: 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
     .modal-input { width: 100%; padding: 12px; border: 2px solid #FFE082; border-radius: 12px; font-size: 16px; margin: 12px 0; text-align: center; }
     #qrcode { display: flex; justify-content: center; margin: 16px 0; }
     #qrcode img { border: 8px solid white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
+    /* Mini-Game Styles */
     .game-menu-btn {
       background: #FFF3E0;
       border: 2px solid #FFB300;
@@ -303,12 +306,12 @@
         <button class="btn" style="background:#757575; margin-top:12px;" onclick="closeGameModal()">Close Games</button>
       </div>
 
-      <!-- Game 1: Daily Lucky Spin (Spinwheel Icon) -->
+      <!-- Game 1: Daily Lucky Spin -->
       <div id="spin-game-container" style="display:none;">
         <div class="game-box">
           <h3 style="margin:0 0 4px 0; color:#E64A19;">Daily Lucky Spin 🎡</h3>
           <p style="font-size:12px; color:#555;" id="spin-instruction">1 spin allowed per day!</p>
-          <div style="font-size: 48px; margin: 16px 0; display: inline-block; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="spin-wheel-icon">🎡</div>
+          <div style="font-size: 42px; margin: 16px 0; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="spin-wheel-icon">🎁</div>
           <div style="font-size: 15px; font-weight: 900; color: var(--primary); margin-bottom: 14px;" id="spin-result-text">Ready to Spin?</div>
           <button class="btn" id="spin-btn" style="background:#FF9800; padding:12px; font-size:16px;" onclick="spinWheel()">SPIN NOW!</button>
         </div>
@@ -497,7 +500,7 @@
       document.getElementById('game-menu').style.display = 'block';
     }
 
-    // Game 1: Daily Lucky Spin (Spinwheel Icon & Rotation)
+    // Game 1: Daily Lucky Spin (1 spin per day check)
     const spinRewards = [
       { text: "+1 Bonus Stamp! 🍢", stamps: 1 },
       { text: "Aww, Try Again Tomorrow! 😅", stamps: 0 },
@@ -537,21 +540,22 @@
       spinBtn.disabled = true;
       
       const icon = document.getElementById('spin-wheel-icon');
-      // Rotates 1080 degrees (3 full rotations) for a thrilling spin effect
-      icon.style.transform = "rotate(1080deg) scale(1.25)";
-      document.getElementById('spin-result-text').innerText = "Spinning the wheel...";
+      icon.style.transform = "rotate(720deg) scale(1.2)";
+      document.getElementById('spin-result-text').innerText = "Spinning...";
 
       setTimeout(() => {
         icon.style.transform = "rotate(0deg) scale(1)";
         const randomReward = spinRewards[Math.floor(Math.random() * spinRewards.length)];
         document.getElementById('spin-result-text').innerText = randomReward.text;
         
+        // Save that they spun today for this specific customer ID
         localStorage.setItem('inato_last_spin_' + custId, today);
 
         if (randomReward.stamps > 0) {
           confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
           playPopSFX();
           
+          // Automatically add bonus stamps to Firebase!
           db.ref('stamps/' + custId).once('value', (snapshot) => {
             let currentStamps = snapshot.val() || 0;
             let newStamps = Math.min(10, currentStamps + randomReward.stamps);
