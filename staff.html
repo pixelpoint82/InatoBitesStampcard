@@ -73,16 +73,16 @@
   </div>
 
   <script>
-    // 👇 REPLACE WITH YOUR FIREBASE CONFIG
-  const firebaseConfig = {
-  apiKey: "AIzaSyBMrW2-PDfUtbekxv2_ze3ctp_-mjmzpAc",
-  authDomain: "inatobites-af74b.firebaseapp.com",
-  databaseURL: "https://inatobites-af74b-default-rtdb.firebaseio.com",
-  projectId: "inatobites-af74b",
-  storageBucket: "inatobites-af74b.firebasestorage.app",
-  messagingSenderId: "155817016872",
-  appId: "1:155817016872:web:b3b39fd08f24c1b3183f1d"
-  };
+    // Your verified Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMrW2-PDfUtbekxv2_ze3ctp_-mjmzpAc",
+      authDomain: "inatobites-af74b.firebaseapp.com",
+      databaseURL: "https://inatobites-af74b-default-rtdb.firebaseio.com",
+      projectId: "inatobites-af74b",
+      storageBucket: "inatobites-af74b.firebasestorage.app",
+      messagingSenderId: "155817016872",
+      appId: "1:155817016872:web:b3b39fd08f24c1b3183f1d"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -100,13 +100,11 @@
       }
     }
 
-    // When customer ID is identified (via scan or manual typing)
     function loadCustomer(id) {
       currentLoadedId = id.trim();
       document.getElementById('active-cust-id').innerText = currentLoadedId;
       document.getElementById('cust-id-input').value = currentLoadedId;
 
-      // Listen to real-time stamps for this customer
       if (dbListenerRef) dbListenerRef.off();
       dbListenerRef = db.ref('stamps/' + currentLoadedId);
       dbListenerRef.on('value', (snapshot) => {
@@ -119,7 +117,6 @@
       if (e.target.value.length >= 4) loadCustomer(e.target.value);
     });
 
-    // Intentional +1 Stamp Action
     function addStamp() {
       if (!currentLoadedId) return alert('Please scan a customer QR code first!');
       db.ref('stamps/' + currentLoadedId).once('value', (snapshot) => {
@@ -152,7 +149,6 @@
       }
     }
 
-    // Camera Scanner logic (Only identifies ID, does NOT auto-stamp)
     function toggleCamera() {
       if (isCameraActive) {
         stopCamera();
@@ -167,7 +163,6 @@
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 220, height: 220 } },
         (decodedText) => {
-          // SCAN RESULT: Identifies customer ID only!
           loadCustomer(decodedText);
           stopCamera();
           alert(`Customer identified: ${decodedText}. Review and click "+1 Stamp" to add stamp.`);
