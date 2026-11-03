@@ -68,8 +68,8 @@
       margin: 4px 0 2px 0;
     }
     .avatar-container {
-      width: 200px;
-      height: 200px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: #FFE082;
       border: 3px solid var(--primary);
@@ -88,8 +88,8 @@
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
     }
     .avatar-container img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    .profile-name { font-size: 30px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
-    .customer-id-tag { font-size: 21px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
+    .profile-name { font-size: 20px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
+    .customer-id-tag { font-size: 11px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
 
     /* Games Header Bar */
     .games-header-bar {
@@ -249,7 +249,6 @@
       <div><span class="customer-id-tag" id="display-cust-id" onclick="openProfileModal()">ID: --- ✏️</span></div>
     </div>
 
-    <!-- Games shortcut bar right above stamp card -->
     <div class="games-header-bar">
       <span style="font-size: 13px; font-weight: 700; color: #795548;">⭐ Your Loyalty Card</span>
       <div class="play-games-badge" onclick="openGameModal()">
@@ -299,23 +298,22 @@
   <div class="modal" id="game-modal">
     <div class="modal-content">
       <h2 style="color:var(--primary); margin:0 0 4px 0;">🎮 Inato Arcade</h2>
-      <p style="font-size:13px; color:#666; margin-bottom:16px;">Play while waiting for your street food favorites!</p>
+      <p style="font-size:13px; color:#666; margin-bottom:16px;">Play games & win daily bonus stamps!</p>
       
       <div id="game-menu">
-        <button class="game-menu-btn" onclick="startSorterGame()">🍢 Street Food Sorter<br><span style="font-size:11px; font-weight:normal; color:#795548;">Sort Kikiam, Siomai, Hotdog & more!</span></button>
+        <button class="game-menu-btn" onclick="startSpinGame()">🎡 Daily Lucky Spin<br><span style="font-size:11px; font-weight:normal; color:#795548;">Spin once a day for bonus stamps!</span></button>
         <button class="game-menu-btn" onclick="startWordGame()">🔤 Guess That Word<br><span style="font-size:11px; font-weight:normal; color:#795548;">Unscramble Inato Bites food words!</span></button>
         <button class="btn" style="background:#757575; margin-top:12px;" onclick="closeGameModal()">Close Games</button>
       </div>
 
-      <!-- Game 1: Street Food Sorter -->
-      <div id="sorter-game-container" style="display:none;">
+      <!-- Game 1: Daily Lucky Spin -->
+      <div id="spin-game-container" style="display:none;">
         <div class="game-box">
-          <h3 style="margin:0 0 4px 0; color:#E64A19;">Street Food Sorter</h3>
-          <p style="font-size:12px; color:#555;" id="sorter-instruction">Tap when matching target item!</p>
-          <div style="font-size: 38px; margin: 10px 0;" id="sorter-display-item">🍢</div>
-          <div style="font-size: 15px; font-weight: bold; color: var(--primary); margin-bottom: 10px;">Target: <span id="sorter-target-name">Kikiam</span></div>
-          <button class="btn" style="background:#4CAF50; padding:10px; font-size:15px;" onclick="checkSorterMatch()">🎯 MATCH!</button>
-          <div style="margin-top:10px; font-size:13px; font-weight:bold;">Score: <span id="sorter-score">0</span> | Time: <span id="sorter-timer">15</span>s</div>
+          <h3 style="margin:0 0 4px 0; color:#E64A19;">Daily Lucky Spin 🎡</h3>
+          <p style="font-size:12px; color:#555;" id="spin-instruction">1 spin allowed per day!</p>
+          <div style="font-size: 42px; margin: 16px 0; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="spin-wheel-icon">🎁</div>
+          <div style="font-size: 15px; font-weight: 900; color: var(--primary); margin-bottom: 14px;" id="spin-result-text">Ready to Spin?</div>
+          <button class="btn" id="spin-btn" style="background:#FF9800; padding:12px; font-size:16px;" onclick="spinWheel()">SPIN NOW!</button>
         </div>
         <button class="btn" style="background:#757575; margin-top:10px;" onclick="backToGameMenu()">Back to Menu</button>
       </div>
@@ -495,77 +493,76 @@
 
     // --- MINI GAMES LOGIC ---
     function openGameModal() { document.getElementById('game-modal').style.display = 'flex'; }
-    function closeGameModal() { 
-      document.getElementById('game-modal').style.display = 'none'; 
-      stopSorterTimer();
-    }
+    function closeGameModal() { document.getElementById('game-modal').style.display = 'none'; }
     function backToGameMenu() {
-      stopSorterTimer();
-      document.getElementById('sorter-game-container').style.display = 'none';
+      document.getElementById('spin-game-container').style.display = 'none';
       document.getElementById('word-game-container').style.display = 'none';
       document.getElementById('game-menu').style.display = 'block';
     }
 
-    // Game 1: Street Food Sorter
-    const foodItems = [
-      { name: 'Kikiam', icon: '🍢' },
-      { name: 'Cheese Sticks', icon: '🧀' },
-      { name: 'Siomai', icon: '🥟' },
-      { name: 'French Fries', icon: '🍟' },
-      { name: 'Hotdog Bites', icon: '🌭' }
+    // Game 1: Daily Lucky Spin (1 spin per day check)
+    const spinRewards = [
+      { text: "+1 Bonus Stamp! 🍢", stamps: 1 },
+      { text: "Aww, Try Again Tomorrow! 😅", stamps: 0 },
+      { text: "+2 Super Stamps! 🌟", stamps: 2 },
+      { text: "No Win Today 🍢", stamps: 0 },
+      { text: "+1 Bonus Stamp! 🍢", stamps: 1 }
     ];
-    let sorterScore = 0;
-    let sorterTimer = 15;
-    let sorterInterval = null;
-    let currentTargetFood = foodItems[0];
-    let currentDisplayedFood = foodItems[0];
 
-    function startSorterGame() {
+    function startSpinGame() {
       document.getElementById('game-menu').style.display = 'none';
-      document.getElementById('sorter-game-container').style.display = 'block';
-      sorterScore = 0;
-      sorterTimer = 15;
-      document.getElementById('sorter-score').innerText = sorterScore;
-      document.getElementById('sorter-timer').innerText = sorterTimer;
-      nextSorterRound();
+      document.getElementById('spin-game-container').style.display = 'block';
+      
+      const lastSpinDate = localStorage.getItem('inato_last_spin_' + custId);
+      const today = new Date().toDateString();
+      const spinBtn = document.getElementById('spin-btn');
+      
+      if (lastSpinDate === today) {
+        document.getElementById('spin-result-text').innerText = "You already spun today! Come back tomorrow! ⏰";
+        spinBtn.disabled = true;
+        spinBtn.style.background = "#B0BEC5";
+      } else {
+        document.getElementById('spin-result-text').innerText = "Ready to Spin for Bonus Stamps?";
+        spinBtn.disabled = false;
+        spinBtn.style.background = "#FF9800";
+      }
+    }
 
-      if(sorterInterval) clearInterval(sorterInterval);
-      sorterInterval = setInterval(() => {
-        sorterTimer--;
-        document.getElementById('sorter-timer').innerText = sorterTimer;
-        if (sorterTimer <= 0) {
-          clearInterval(sorterInterval);
-          alert(`Time's up! You sorted ${sorterScore} street foods correctly! 🍢🎉`);
-          backToGameMenu();
+    function spinWheel() {
+      const lastSpinDate = localStorage.getItem('inato_last_spin_' + custId);
+      const today = new Date().toDateString();
+      if (lastSpinDate === today) {
+        alert("You have already used your daily spin today!");
+        return;
+      }
+
+      const spinBtn = document.getElementById('spin-btn');
+      spinBtn.disabled = true;
+      
+      const icon = document.getElementById('spin-wheel-icon');
+      icon.style.transform = "rotate(720deg) scale(1.2)";
+      document.getElementById('spin-result-text').innerText = "Spinning...";
+
+      setTimeout(() => {
+        icon.style.transform = "rotate(0deg) scale(1)";
+        const randomReward = spinRewards[Math.floor(Math.random() * spinRewards.length)];
+        document.getElementById('spin-result-text').innerText = randomReward.text;
+        
+        // Save that they spun today for this specific customer ID
+        localStorage.setItem('inato_last_spin_' + custId, today);
+
+        if (randomReward.stamps > 0) {
+          confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+          playPopSFX();
+          
+          // Automatically add bonus stamps to Firebase!
+          db.ref('stamps/' + custId).once('value', (snapshot) => {
+            let currentStamps = snapshot.val() || 0;
+            let newStamps = Math.min(10, currentStamps + randomReward.stamps);
+            db.ref('stamps/' + custId).set(newStamps);
+          });
         }
       }, 1000);
-    }
-
-    function stopSorterTimer() {
-      if(sorterInterval) clearInterval(sorterInterval);
-    }
-
-    function nextSorterRound() {
-      currentTargetFood = foodItems[Math.floor(Math.random() * foodItems.length)];
-      // 50% chance to show matching or mismatched item
-      if(Math.random() > 0.5) {
-        currentDisplayedFood = currentTargetFood;
-      } else {
-        currentDisplayedFood = foodItems[Math.floor(Math.random() * foodItems.length)];
-      }
-      document.getElementById('sorter-target-name').innerText = currentTargetFood.name;
-      document.getElementById('sorter-display-item').innerText = currentDisplayedFood.icon;
-    }
-
-    function checkSorterMatch() {
-      if (currentDisplayedFood.name === currentTargetFood.name) {
-        sorterScore += 1;
-        playPopSFX();
-      } else {
-        sorterScore = Math.max(0, sorterScore - 1);
-      }
-      document.getElementById('sorter-score').innerText = sorterScore;
-      nextSorterRound();
     }
 
     // Game 2: Guess That Word
@@ -588,7 +585,6 @@
 
     function loadNewWord() {
       currentWordObj = wordList[Math.floor(Math.random() * wordList.length)];
-      // Scramble word
       let scrambled = currentWordObj.word.split('').sort(() => Math.random() - 0.5).join(' ');
       document.getElementById('word-scrambled').innerText = scrambled;
       document.getElementById('word-hint').innerText = 'Hint: ' + currentWordObj.hint;
