@@ -21,15 +21,26 @@
     .btn-warning { background: #FF9800; }
     input[type="text"], input[type="password"] { width: 100%; padding: 12px; border: 2px solid #CFD8DC; border-radius: 12px; font-size: 16px; text-align: center; margin-bottom: 10px; }
     #reader { width: 100%; border-radius: 16px; overflow: hidden; background: #000; margin-bottom: 8px; }
+    
     .lock-screen { position: fixed; inset: 0; background: #263238; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
     .lock-box { background: white; border-radius: 24px; padding: 24px; width: 100%; max-width: 320px; text-align: center; }
     
-    /* Staff Customer Verification Display */
+    /* Scanned Customer Box */
     .scanned-customer-box { background: #E8F5E9; border: 2px solid #81C784; padding: 14px; border-radius: 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; text-align: left; }
     .staff-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #4CAF50; object-fit: cover; object-position: center; background: #FFF; flex-shrink: 0; }
     .staff-info { overflow: hidden; }
     .staff-name { font-size: 17px; font-weight: 800; color: #2E7D32; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .staff-sub { font-size: 12px; color: #388E3C; margin-top: 2px; }
+
+    /* Directory Customer Cards */
+    .directory-list { display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; text-align: left; margin-top: 10px; padding-right: 4px; }
+    .directory-item { background: #F5F5F5; border: 1px solid #E0E0E0; border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+    .directory-item:hover { background: #E1F5FE; border-color: #29B6F6; }
+    .dir-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #FFF; border: 1px solid #B0BEC5; }
+    .dir-info { flex-grow: 1; overflow: hidden; }
+    .dir-name { font-size: 13px; font-weight: 700; color: #37474F; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dir-sub { font-size: 11px; color: #78909C; }
+    .dir-stamps { font-size: 12px; font-weight: 800; color: #E64A19; background: #FFCCBC; padding: 3px 8px; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -49,18 +60,14 @@
     <div class="header">
       <h2 style="margin:0;">Inato Bites Staff 🍢</h2>
       <div style="font-size:12px; opacity:0.8; margin-top:4px;">Scanner & Stamp Manager</div>
+      <div style="margin-top:10px; background:rgba(255,255,255,0.15); padding:6px 12px; border-radius:12px; font-size:13px; font-weight:700;">
+        👥 Total Unique Customers: <span id="total-customers-count" style="color:#FFD54F;">0</span>
+      </div>
     </div>
 
-    <!-- QR Camera Scanner Card -->
+    <!-- Active Customer Verification Card -->
     <div class="card">
-      <h3 style="margin:0 0 12px 0;">📷 Scan Customer QR</h3>
-      <div id="reader"></div>
-      <button class="btn btn-warning" id="toggle-cam-btn" onclick="toggleCamera()">Start Camera Scanner</button>
-    </div>
-
-    <!-- Active Customer & Verification Card -->
-    <div class="card">
-      <h3 style="margin:0 0 10px 0;">🎯 Customer Verification</h3>
+      <h3 style="margin:0 0 10px 0;">🎯 Customer Management</h3>
       
       <div class="scanned-customer-box">
         <img id="staff-cust-avatar" class="staff-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 24 24' fill='%2381C784'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="Avatar">
@@ -73,12 +80,27 @@
 
       <input type="text" id="cust-id-input" placeholder="Or type Customer ID manually (e.g. IB-1234)">
       
-      <!-- Intentional Stamping Button -->
       <button class="btn btn-success" onclick="addStamp()">➕ Click to Add +1 Stamp</button>
       
       <div style="display:flex; gap:8px; margin-top:8px;">
         <button class="btn btn-danger" onclick="removeStamp()">-1 Stamp</button>
         <button class="btn btn-warning" onclick="resetCard()">Claim & Reset</button>
+      </div>
+    </div>
+
+    <!-- QR Camera Scanner Card -->
+    <div class="card">
+      <h3 style="margin:0 0 12px 0;">📷 Scan Customer QR</h3>
+      <div id="reader"></div>
+      <button class="btn btn-warning" id="toggle-cam-btn" onclick="toggleCamera()">Start Camera Scanner</button>
+    </div>
+
+    <!-- Customer Directory Card -->
+    <div class="card">
+      <h3 style="margin:0 0 4px 0; text-align:left; font-size:16px;">📋 All Customers Directory</h3>
+      <p style="font-size:11px; color:#78909C; text-align:left; margin:0 0 8px 0;">Tap any customer to select them above</p>
+      <div class="directory-list" id="directory-container">
+        <div style="font-size:12px; color:#90A4AE; text-align:center; padding:10px;">Loading customer list...</div>
       </div>
     </div>
   </div>
@@ -116,7 +138,6 @@
       document.getElementById('active-cust-id').innerText = currentLoadedId;
       document.getElementById('cust-id-input').value = currentLoadedId;
 
-      // Listen to Real-time Stamps
       if (dbListenerRef) dbListenerRef.off();
       dbListenerRef = db.ref('stamps/' + currentLoadedId);
       dbListenerRef.on('value', (snapshot) => {
@@ -124,7 +145,6 @@
         document.getElementById('active-cust-stamps').innerText = stamps;
       });
 
-      // Listen to Real-time Customer Profile (Name & Avatar)
       if (profileListenerRef) profileListenerRef.off();
       profileListenerRef = db.ref('profiles/' + currentLoadedId);
       profileListenerRef.on('value', (snapshot) => {
@@ -145,7 +165,7 @@
     });
 
     function addStamp() {
-      if (!currentLoadedId) return alert('Please scan a customer QR code first!');
+      if (!currentLoadedId) return alert('Please scan or select a customer QR code first!');
       db.ref('stamps/' + currentLoadedId).once('value', (snapshot) => {
         let currentStamps = snapshot.val() || 0;
         if (currentStamps >= 10) {
@@ -209,6 +229,53 @@
         });
       }
     }
+
+    // --- LIVE DIRECTORY & UNIQUE USER TRACKER ---
+    function initDirectoryListener() {
+      // Listen to profiles
+      db.ref('profiles').on('value', (profilesSnapshot) => {
+        const profiles = profilesSnapshot.val() || {};
+        
+        // Listen to stamps
+        db.ref('stamps').on('value', (stampsSnapshot) => {
+          const stamps = stampsSnapshot.val() || {};
+          
+          // Combine unique keys from profiles and stamps
+          const allUserIds = Array.from(new Set([...Object.keys(profiles), ...Object.keys(stamps)]));
+          document.getElementById('total-customers-count').innerText = allUserIds.length;
+
+          const container = document.getElementById('directory-container');
+          container.innerHTML = '';
+
+          if (allUserIds.length === 0) {
+            container.innerHTML = '<div style="font-size:12px; color:#90A4AE; text-align:center; padding:10px;">No registered customers yet.</div>';
+            return;
+          }
+
+          allUserIds.forEach(id => {
+            const userProfile = profiles[id] || {};
+            const userStamps = stamps[id] || 0;
+            const userName = userProfile.name || 'Street Food Fan';
+            const userAvatar = userProfile.avatar || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24' fill='%2390A4AE'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
+
+            const item = document.createElement('div');
+            item.className = 'directory-item';
+            item.onclick = () => loadCustomer(id);
+            item.innerHTML = `
+              <img class="dir-avatar" src="${userAvatar}" alt="Avatar">
+              <div class="dir-info">
+                <div class="dir-name">${userName}</div>
+                <div class="dir-sub">ID: ${id}</div>
+              </div>
+              <div class="dir-stamps">🍢 ${userStamps}/10</div>
+            `;
+            container.appendChild(item);
+          });
+        });
+      });
+    }
+
+    initDirectoryListener();
   </script>
 </body>
 </html>
