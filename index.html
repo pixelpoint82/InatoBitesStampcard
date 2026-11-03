@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inato Bites - Digital Stamp Card</title>
+  
+  <!-- Mobile Home Screen App Icon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+  <meta name="theme-color" content="#FF5722">
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Firebase SDKs -->
@@ -26,7 +33,6 @@
       background-size: 60px 60px;
       background-position: 0 0, 30px 30px;
       background-attachment: fixed;
-      background-opacity: 0.1;
       color: var(--dark);
       margin: 0;
       padding: 16px;
@@ -47,45 +53,44 @@
       text-align: center;
       background: linear-gradient(135deg, var(--primary), #E64A19);
       color: white;
-      padding: 18px 16px;
-      border-radius: 24px;
-      box-shadow: 0 8px 16px rgba(255, 87, 34, 0.25);
-      position: relative;
-      overflow: hidden;
-    }
-    .brand-title { font-size: 28px; font-weight: 900; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .brand-subtitle { font-size: 13px; margin-top: 4px; font-weight: 600; opacity: 0.95; }
-    
-    /* Profile Section */
-    .profile-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(5px);
+      padding: 16px;
       border-radius: 20px;
-      padding: 14px 20px;
+      box-shadow: 0 6px 14px rgba(255, 87, 34, 0.25);
+    }
+    .brand-title { font-size: 26px; font-weight: 900; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .brand-subtitle { font-size: 12px; margin-top: 2px; font-weight: 600; opacity: 0.95; }
+    
+    /* Centered Profile Section */
+    .profile-section {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-      border: 2px solid #FFE082;
+      text-align: center;
+      margin: 4px 0 2px 0;
     }
     .avatar-container {
-      width: 56px;
-      height: 56px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: #FFE082;
-      border: 2px solid var(--primary);
+      border: 3px solid var(--primary);
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
       cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
+      animation: pulseAvatar 2.5s infinite ease-in-out;
       position: relative;
     }
+    @keyframes pulseAvatar {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4); }
+      50% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
+    }
     .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-    .profile-info { flex-grow: 1; overflow: hidden; }
-    .profile-name { font-size: 18px; font-weight: 800; color: var(--dark); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .customer-id-tag { font-size: 11px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 4px; }
+    .profile-name { font-size: 20px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
+    .customer-id-tag { font-size: 11px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
 
     /* Stamp Card */
     .card {
@@ -175,17 +180,11 @@
 
     /* Modals */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 20px; z-index: 100; backdrop-filter: blur(4px); }
-    .modal-content { background: white; border-radius: 24px; padding: 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-content { background: white; border-radius: 28px; padding: 28px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
     .modal-input { width: 100%; padding: 12px; border: 2px solid #FFE082; border-radius: 12px; font-size: 16px; margin: 12px 0; text-align: center; }
     #qrcode { display: flex; justify-content: center; margin: 16px 0; }
     #qrcode img { border: 8px solid white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
   </style>
-    <!-- Mobile Home Screen App Icon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
-  <meta name="theme-color" content="#FF5722">
-
 </head>
 <body>
 
@@ -198,16 +197,13 @@
       <div class="brand-subtitle">Collect 10 Stamps for a FREE Treats Order!</div>
     </div>
 
-    <!-- Customer Profile Header Card -->
-    <div class="profile-card">
-      <div class="avatar-container" onclick="openProfileModal()" title="Tap to change avatar/name">
-        <img id="profile-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='%23FF5722'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="Avatar">
+    <!-- Centered Profile Section (Bigger Avatar, Name Below) -->
+    <div class="profile-section">
+      <div class="avatar-container" onclick="openProfileModal()" title="Tap to edit profile">
+        <img id="profile-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 24 24' fill='%23FF5722'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="Avatar">
       </div>
-      <div class="profile-info">
-        <h3 class="profile-name" id="profile-name-display">Street Food Fan</h3>
-        <div><span class="customer-id-tag" id="display-cust-id">ID: ---</span></div>
-      </div>
-      <button onclick="openProfileModal()" style="background:none; border:none; font-size:18px; cursor:pointer;" title="Edit Profile">✏️</button>
+      <h2 class="profile-name" id="profile-name-display" onclick="openProfileModal()" style="cursor:pointer;" title="Tap to change name">Street Food Fan</h2>
+      <div><span class="customer-id-tag" id="display-cust-id" onclick="openProfileModal()">ID: --- ✏️</span></div>
     </div>
 
     <!-- Stamp Card Grid Box -->
@@ -224,7 +220,7 @@
   <div class="modal" id="qr-modal">
     <div class="modal-content">
       <h3 style="margin:0 0 8px 0; color:var(--dark);">Scan at Counter</h3>
-      <p style="font-size:13px; color:#666;">Show this QR code to staff to identify your stamp card.</p>
+      <p style="font-size:13px; color:#666;">Show this QR code to Ate Genie Rose to identify your stamp card.</p>
       <div id="qrcode"></div>
       <button class="btn" style="background:#757575; margin-top:12px;" onclick="closeQRModal()">Close</button>
     </div>
@@ -237,10 +233,10 @@
       <p style="font-size:13px; color:#666;">Enter your name and take a quick selfie!</p>
       
       <div style="margin: 14px 0;">
-        <div style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; border: 3px solid var(--primary); background:#FFE082;" id="modal-avatar-preview-container">
+        <div style="width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; border: 3px solid var(--primary); background:#FFE082;" id="modal-avatar-preview-container">
           <img id="modal-avatar-preview" src="" style="width:100%; height:100%; object-fit:cover;" alt="Preview">
         </div>
-        <button class="btn" style="padding: 8px 14px; font-size: 13px; width: auto; display: inline-block; background:#FFB300; color:var(--dark);" onclick="triggerCameraInput()">📷 Take Selfie / Upload Photo</button>
+        <button class="btn" style="padding: 10px 14px; font-size: 13px; width: auto; display: inline-block; background:#FFB300; color:var(--dark);" onclick="triggerCameraInput()">📷 Take Selfie / Upload Photo</button>
         <input type="file" id="camera-file-input" accept="image/*" capture="user" style="display:none;" onchange="handleImageUpload(event)">
       </div>
 
@@ -249,12 +245,15 @@
     </div>
   </div>
 
-  <!-- Reward Modal -->
+  <!-- Reward Modal (Bigger overlay & references Ate Genie Rose) -->
   <div class="modal" id="reward-modal">
-    <div class="modal-content">
-      <h2 style="color:var(--primary); margin:0 0 8px 0;">🎉 CONGRATULATIONS!</h2>
-      <p style="font-size:14px; font-weight:600;">You've collected all 10 stamps! Show this to staff to claim your <strong>FREE order</strong> of Kikiam, Cheese Sticks, Siomai, French Fries, or Hotdog Bites!</p>
-      <button class="btn" onclick="closeRewardModal()">Awesome!</button>
+    <div class="modal-content" style="max-width: 410px; padding: 32px 24px;">
+      <div style="font-size: 42px; margin-bottom: 4px;">🏆</div>
+      <h2 style="color:var(--primary); margin:0 0 10px 0; font-size: 24px;">CONGRATULATIONS!</h2>
+      <p style="font-size: 15px; font-weight: 600; line-height: 1.5; color: #4E342E; margin-bottom: 20px;">
+        You've completed all 10 stamps! Show this screen to <strong>Ate Genie Rose</strong> to claim your <strong>FREE order</strong> of Kikiam, Cheese Sticks, Siomai, French Fries, or Hotdog Bites!
+      </p>
+      <button class="btn" onclick="closeRewardModal()" style="font-size: 17px; padding: 16px;">Awesome, Claim Reward!</button>
     </div>
   </div>
 
@@ -277,14 +276,13 @@
     let previousStampsCount = null;
     let tempAvatarBase64 = '';
 
-    // Initialize Customer ID & Profile
     function initCustomer() {
       let id = localStorage.getItem('inato_cust_id');
       if (!id) {
         id = 'IB-' + Math.floor(1000 + Math.random() * 9000);
         localStorage.setItem('inato_cust_id', id);
       }
-      document.getElementById('display-cust-id').innerText = 'ID: ' + id;
+      document.getElementById('display-cust-id').innerText = 'ID: ' + id + ' ✏️';
 
       let savedName = localStorage.getItem('inato_cust_name');
       let savedAvatar = localStorage.getItem('inato_cust_avatar');
@@ -303,11 +301,8 @@
 
     const custId = initCustomer();
 
-    // Listen to Firebase Realtime Database for stamp changes
     db.ref('stamps/' + custId).on('value', (snapshot) => {
       const count = snapshot.val() || 0;
-      
-      // Check if stamp count increased to trigger animation & sound
       if (previousStampsCount !== null && count > previousStampsCount) {
         triggerStampAnimation();
       }
@@ -356,7 +351,6 @@
       }
     }
 
-    // Profile Modal Controls
     function openProfileModal() {
       document.getElementById('name-input').value = localStorage.getItem('inato_cust_name') || '';
       let currentAvatar = localStorage.getItem('inato_cust_avatar') || document.getElementById('profile-avatar').src;
@@ -374,7 +368,6 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          // Resize image using canvas to keep storage size small
           const img = new Image();
           img.onload = function() {
             const canvas = document.createElement('canvas');
