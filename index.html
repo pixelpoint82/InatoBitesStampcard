@@ -26,11 +26,16 @@
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body {
       background-color: var(--bg);
+      /* Street food themed playful background pattern */
       background-image: 
-        radial-gradient(#FFB300 15%, transparent 16%),
-        radial-gradient(#FF5722 15%, transparent 16%);
-      background-size: 60px 60px;
-      background-position: 0 0, 30px 30px;
+        linear-gradient(30deg, #FFE082 12%, transparent 12.5%, transparent 87%, #FFE082 87.5%, #FFE082),
+        linear-gradient(150deg, #FFE082 12%, transparent 12.5%, transparent 87%, #FFE082 87.5%, #FFE082),
+        linear-gradient(30deg, #FFE082 12%, transparent 12.5%, transparent 87%, #FFE082 87.5%, #FFE082),
+        linear-gradient(150deg, #FFE082 12%, transparent 12.5%, transparent 87%, #FFE082 87.5%, #FFE082),
+        linear-gradient(60deg, #FFCC80 25%, transparent 25.5%, transparent 75%, #FFCC80 75%, #FFCC80),
+        linear-gradient(60deg, #FFCC80 25%, transparent 25.5%, transparent 75%, #FFCC80 75%, #FFCC80);
+      background-size: 80px 140px;
+      background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
       background-attachment: fixed;
       color: var(--dark);
       margin: 0;
@@ -67,34 +72,35 @@
       text-align: center;
       margin: 4px 0 2px 0;
     }
+    /* 150px Avatar Profile Pic */
     .avatar-container {
-      width: 90px;
-      height: 90px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       background: #FFE082;
-      border: 3px solid var(--primary);
+      border: 4px solid var(--primary);
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
+      box-shadow: 0 10px 25px rgba(255, 87, 34, 0.35);
       animation: pulseAvatar 2.5s infinite ease-in-out;
       position: relative;
     }
     @keyframes pulseAvatar {
       0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4); }
-      50% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
+      50% { transform: scale(1.03); box-shadow: 0 0 0 12px rgba(255, 87, 34, 0); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
     }
     .avatar-container img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    .profile-name { font-size: 20px; font-weight: 800; color: var(--dark); margin: 8px 0 2px 0; }
+    .profile-name { font-size: 22px; font-weight: 800; color: var(--dark); margin: 10px 0 2px 0; }
     .customer-id-tag { font-size: 11px; font-weight: 700; color: #795548; background: #FFECB3; padding: 2px 10px; border-radius: 10px; display: inline-block; cursor: pointer; }
 
-    /* Games Header Bar */
+    /* Games Header Bar (Cleaned up: only play games badge aligned right) */
     .games-header-bar {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       margin-bottom: -6px;
       padding: 0 4px;
@@ -102,9 +108,9 @@
     .play-games-badge {
       background: linear-gradient(135deg, #FFB300, #FF8F00);
       color: #3E2723;
-      padding: 6px 12px;
+      padding: 8px 16px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(255, 179, 0, 0.4);
@@ -127,10 +133,11 @@
       border: 3px solid #FFE082;
       text-align: center;
     }
+    /* 15 Stamp Grid Layout (5 columns x 3 rows) */
     .grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+      gap: 8px;
       margin-top: 14px;
     }
     .stamp-slot {
@@ -142,7 +149,7 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 13px;
       color: #9E9E9E;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
@@ -202,14 +209,12 @@
     }
     #stamp-notification.show { top: 20px; }
 
-    /* Modals */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(4px); overflow-y: auto; }
     .modal-content { background: white; border-radius: 28px; padding: 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
     .modal-input { width: 100%; padding: 12px; border: 2px solid #FFE082; border-radius: 12px; font-size: 16px; margin: 12px 0; text-align: center; }
     #qrcode { display: flex; justify-content: center; margin: 16px 0; }
     #qrcode img { border: 8px solid white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-    /* Mini-Game Styles */
     .game-menu-btn {
       background: #FFF3E0;
       border: 2px solid #FFB300;
@@ -238,26 +243,27 @@
   <div class="app-container">
     <div class="header">
       <h1 class="brand-title">Inato Bites 🍢</h1>
-      <div class="brand-subtitle">Collect 10 Stamps for a FREE Treats Order!</div>
+      <div class="brand-subtitle">Collect 15 Stamps for a FREE Treats Order!</div>
     </div>
 
+    <!-- 150px Avatar Profile Section -->
     <div class="profile-section">
       <div class="avatar-container" onclick="openProfileModal()" title="Tap to edit profile">
-        <img id="profile-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 24 24' fill='%23FF5722'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="Avatar">
+        <img id="profile-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 24 24' fill='%23FF5722'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>" alt="Avatar">
       </div>
       <h2 class="profile-name" id="profile-name-display" onclick="openProfileModal()" style="cursor:pointer;" title="Tap to change name">Street Food Fan</h2>
       <div><span class="customer-id-tag" id="display-cust-id" onclick="openProfileModal()">ID: --- ✏️</span></div>
     </div>
 
     <div class="games-header-bar">
-      <span style="font-size: 13px; font-weight: 700; color: #795548;">⭐ Your Loyalty Card</span>
       <div class="play-games-badge" onclick="openGameModal()">
         <span>🎮 Play Games</span>
       </div>
     </div>
 
+    <!-- 15 Stamps Card Grid -->
     <div class="card">
-      <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;" id="status-text">0 / 10 Stamps Completed</div>
+      <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;" id="status-text">0 / 15 Stamps Completed</div>
       <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
       <div class="grid" id="stamp-grid"></div>
     </div>
@@ -282,7 +288,7 @@
       <p style="font-size:13px; color:#666;">Enter your name and take a quick selfie!</p>
       
       <div style="margin: 14px 0;">
-        <div style="width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; border: 3px solid var(--primary); background:#FFE082;" id="modal-avatar-preview-container">
+        <div style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; border: 3px solid var(--primary); background:#FFE082;" id="modal-avatar-preview-container">
           <img id="modal-avatar-preview" src="" style="width:100%; height:100%; object-fit:cover; object-position:center;" alt="Preview">
         </div>
         <button class="btn" style="padding: 10px 14px; font-size: 13px; width: auto; display: inline-block; background:#FFB300; color:var(--dark);" onclick="triggerCameraInput()">📷 Take Selfie / Upload Photo</button>
@@ -302,7 +308,7 @@
       
       <div id="game-menu">
         <button class="game-menu-btn" onclick="startSpinGame()">🎡 Daily Lucky Spin<br><span style="font-size:11px; font-weight:normal; color:#795548;">Spin once a day for bonus stamps!</span></button>
-        <button class="game-menu-btn" onclick="startWordGame()">🔤 Guess That Word<br><span style="font-size:11px; font-weight:normal; color:#795548;">Unscramble Inato Bites food words!</span></button>
+        <button class="game-menu-btn" onclick="startWordGame()">🔤 Guess That Word (Timed!)<br><span style="font-size:11px; font-weight:normal; color:#795548;">Unscramble 50+ street food words!</span></button>
         <button class="btn" style="background:#757575; margin-top:12px;" onclick="closeGameModal()">Close Games</button>
       </div>
 
@@ -311,22 +317,23 @@
         <div class="game-box">
           <h3 style="margin:0 0 4px 0; color:#E64A19;">Daily Lucky Spin 🎡</h3>
           <p style="font-size:12px; color:#555;" id="spin-instruction">1 spin allowed per day!</p>
-          <div style="font-size: 42px; margin: 16px 0; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="spin-wheel-icon">🎁</div>
+          <div style="font-size: 48px; margin: 16px 0; display: inline-block; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="spin-wheel-icon">🎡</div>
           <div style="font-size: 15px; font-weight: 900; color: var(--primary); margin-bottom: 14px;" id="spin-result-text">Ready to Spin?</div>
           <button class="btn" id="spin-btn" style="background:#FF9800; padding:12px; font-size:16px;" onclick="spinWheel()">SPIN NOW!</button>
         </div>
         <button class="btn" style="background:#757575; margin-top:10px;" onclick="backToGameMenu()">Back to Menu</button>
       </div>
 
-      <!-- Game 2: Guess That Word -->
+      <!-- Game 2: Guess That Word (Timed with 50+ Words) -->
       <div id="word-game-container" style="display:none;">
         <div class="game-box">
           <h3 style="margin:0 0 4px 0; color:#E64A19;">Guess That Word</h3>
           <p style="font-size:12px; color:#555;" id="word-hint">Hint: Pinoy street food favorite</p>
-          <div style="font-size: 26px; font-weight: 900; letter-spacing: 4px; color: var(--dark); margin: 14px 0;" id="word-scrambled">I K K M I A</div>
+          <div style="font-size: 24px; font-weight: 900; letter-spacing: 3px; color: var(--dark); margin: 10px 0;" id="word-scrambled">K I K I A M</div>
           <input type="text" id="word-guess-input" class="modal-input" placeholder="Type your guess here">
           <button class="btn" style="background:#4CAF50; padding:10px; font-size:15px;" onclick="checkWordGuess()">Submit Guess</button>
-          <div style="margin-top:10px; font-size:13px; font-weight:bold; color:#388E3C;" id="word-feedback"></div>
+          <div style="margin-top:8px; font-size:13px; font-weight:bold; color:#388E3C;" id="word-feedback"></div>
+          <div style="margin-top:10px; font-size:13px; font-weight:bold; color:#E64A19;">⏱️ Time Left: <span id="word-timer">30</span>s | Score: <span id="word-score">0</span></div>
         </div>
         <button class="btn" style="background:#757575; margin-top:10px;" onclick="backToGameMenu()">Back to Menu</button>
       </div>
@@ -340,7 +347,7 @@
       <div style="font-size: 42px; margin-bottom: 4px;">🏆</div>
       <h2 style="color:var(--primary); margin:0 0 10px 0; font-size: 24px;">CONGRATULATIONS!</h2>
       <p style="font-size: 15px; font-weight: 600; line-height: 1.5; color: #4E342E; margin-bottom: 20px;">
-        You've completed all 10 stamps! Show this screen to <strong>Ate Genie Rose</strong> to claim your <strong>FREE order</strong> of Kikiam, Cheese Sticks, Siomai, French Fries, or Hotdog Bites!
+        You've completed all 15 stamps! Show this screen to <strong>Ate Genie Rose</strong> to claim your <strong>FREE grand reward order</strong> of Inato Bites specialties!
       </p>
       <button class="btn" onclick="closeRewardModal()" style="font-size: 17px; padding: 16px;">Awesome, Claim Reward!</button>
     </div>
@@ -359,8 +366,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const STAMPS_REQUIRED = 10;
-    const icons = ['🍢', '🧀', '🥟', '🍟', '🌭', '🍢', '🧀', '🥟', '🍟', '🎁'];
+    const STAMPS_REQUIRED = 15;
+    const icons = ['🍢', '🧀', '🥟', '🍟', '🌭', '🍢', '🧀', '🥟', '🍟', '🌭', '🍢', '🧀', '🥟', '🍟', '🎁'];
     let previousStampsCount = null;
     let tempAvatarBase64 = '';
 
@@ -427,12 +434,12 @@
       grid.innerHTML = '';
       for (let i = 1; i <= STAMPS_REQUIRED; i++) {
         const slot = document.createElement('div');
-        slot.className = `stamp-slot ${i <= count ? 'stamped' : ''} ${i === 10 ? 'reward-slot' : ''}`;
-        slot.innerHTML = i <= count ? `<span style="font-size:20px;">${icons[i-1]}</span>` : (i === 10 ? '🎁' : i);
+        slot.className = `stamp-slot ${i <= count ? 'stamped' : ''} ${i === STAMPS_REQUIRED ? 'reward-slot' : ''}`;
+        slot.innerHTML = i <= count ? `<span style="font-size:18px;">${icons[(i-1) % icons.length]}</span>` : (i === STAMPS_REQUIRED ? '🎁' : i);
         grid.appendChild(slot);
       }
 
-      if (count === 10) {
+      if (count >= STAMPS_REQUIRED) {
         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
         document.getElementById('reward-modal').style.display = 'flex';
       }
@@ -459,9 +466,9 @@
           img.onload = function() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 200;
-            canvas.height = 200;
-            ctx.drawImage(img, 0, 0, 200, 200);
+            canvas.width = 250;
+            canvas.height = 250;
+            ctx.drawImage(img, 0, 0, 250, 250);
             tempAvatarBase64 = canvas.toDataURL('image/jpeg', 0.85);
             document.getElementById('modal-avatar-preview').src = tempAvatarBase64;
           };
@@ -493,14 +500,18 @@
 
     // --- MINI GAMES LOGIC ---
     function openGameModal() { document.getElementById('game-modal').style.display = 'flex'; }
-    function closeGameModal() { document.getElementById('game-modal').style.display = 'none'; }
+    function closeGameModal() { 
+      document.getElementById('game-modal').style.display = 'none'; 
+      stopWordTimer();
+    }
     function backToGameMenu() {
+      stopWordTimer();
       document.getElementById('spin-game-container').style.display = 'none';
       document.getElementById('word-game-container').style.display = 'none';
       document.getElementById('game-menu').style.display = 'block';
     }
 
-    // Game 1: Daily Lucky Spin (1 spin per day check)
+    // Daily Lucky Spin
     const spinRewards = [
       { text: "+1 Bonus Stamp! 🍢", stamps: 1 },
       { text: "Aww, Try Again Tomorrow! 😅", stamps: 0 },
@@ -540,47 +551,113 @@
       spinBtn.disabled = true;
       
       const icon = document.getElementById('spin-wheel-icon');
-      icon.style.transform = "rotate(720deg) scale(1.2)";
-      document.getElementById('spin-result-text').innerText = "Spinning...";
+      icon.style.transform = "rotate(1080deg) scale(1.25)";
+      document.getElementById('spin-result-text').innerText = "Spinning the wheel...";
 
       setTimeout(() => {
         icon.style.transform = "rotate(0deg) scale(1)";
         const randomReward = spinRewards[Math.floor(Math.random() * spinRewards.length)];
         document.getElementById('spin-result-text').innerText = randomReward.text;
         
-        // Save that they spun today for this specific customer ID
         localStorage.setItem('inato_last_spin_' + custId, today);
 
         if (randomReward.stamps > 0) {
           confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
           playPopSFX();
           
-          // Automatically add bonus stamps to Firebase!
           db.ref('stamps/' + custId).once('value', (snapshot) => {
             let currentStamps = snapshot.val() || 0;
-            let newStamps = Math.min(10, currentStamps + randomReward.stamps);
+            let newStamps = Math.min(STAMPS_REQUIRED, currentStamps + randomReward.stamps);
             db.ref('stamps/' + custId).set(newStamps);
           });
         }
       }, 1000);
     }
 
-    // Game 2: Guess That Word
+    // --- 50+ STREET FOOD WORDS & TIMER LOGIC ---
     const wordList = [
       { word: 'KIKIAM', hint: 'Pinoy fried fish/meat roll stick' },
       { word: 'SIOMAI', hint: 'Steamed dumpling favorite' },
       { word: 'CHEESE', hint: 'Melty fried sticks snack' },
       { word: 'HOTDOG', hint: 'Classic fried stick snack' },
-      { word: 'FRIES', hint: 'Crispy salted potato strips' }
+      { word: 'FRIES', hint: 'Crispy salted potato strips' },
+      { word: 'FISHBALL', hint: 'Popular round street food snack' },
+      { word: 'SQUIDBALL', hint: 'Seafood round fried snack' },
+      { word: 'KROPECK', hint: 'Crispy fish cracker chips' },
+      { word: 'BALUT', hint: 'Boiled fertilized duck egg' },
+      { word: 'PENOY', hint: 'Boiled duck egg without chick' },
+      { word: 'ISAW', hint: 'Grilled chicken or pork intestines' },
+      { word: 'BETAMAX', hint: 'Grilled rectangular coagulated pork blood' },
+      { word: 'PROBEN', hint: 'Crispy fried proventriculus of chicken' },
+      { word: 'TAMAWO', hint: 'Grilled chicken head' },
+      { word: 'PASTE', hint: 'Grilled chicken neck' },
+      { word: 'WALKMAN', hint: 'Grilled pig ears' },
+      { word: 'BONELESS', hint: 'Grilled bangus belly' },
+      { word: 'SIOPAO', hint: 'Steamed fluffy pork bun' },
+      { word: 'TURON', hint: 'Sweet fried banana saba spring roll' },
+      { word: 'BANANACUE', hint: 'Fried brown-sugar coated saba banana' },
+      { word: 'CAMOTE', hint: 'Fried sweet potato cue' },
+      { word: 'MARUYA', hint: 'Banana fritters snack' },
+      { word: 'HALOHALO', hint: 'Famous shaved ice dessert mix' },
+      { word: 'MAIS', hint: 'Sweet corn con queso snack' },
+      { word: 'TAHO', hint: 'Silky tofu with sago and arnibal' },
+      { word: 'KENDI', hint: 'Sweet street candy' },
+      { word: 'SHAKE', hint: 'Fresh fruit mango shake' },
+      { word: 'BUKO', hint: 'Fresh coconut juice' },
+      { word: 'SIZZLING', hint: 'Hot plate sisig dish' },
+      { word: 'LOMI', hint: 'Thick noodle soup' },
+      { word: 'PANSIT', hint: 'Filipino stir-fried noodles' },
+      { word: 'LUMPIA', hint: 'Crispy fried spring rolls' },
+      { word: 'SHOMAI', hint: 'Steamed pork dumpling' },
+      { word: 'SHAWARMA', hint: 'Beef wrap sandwich' },
+      { word: 'BURGER', hint: 'Pinoy street beef patty' },
+      { word: 'CORNDOG', hint: 'Battered sausage on a stick' },
+      { word: 'TACO', hint: 'Crunchy snack wrap' },
+      { word: 'DONUT', hint: 'Sweet glazed pastry' },
+      { word: 'WAFFLE', hint: 'Hot waffle with filling' },
+      { word: 'PANCAKE', hint: 'Fluffy breakfast snack' },
+      { word: 'CHURROS', hint: 'Fried dough pastry' },
+      { word: 'MILKTEA', hint: 'Sweet pearl tea drink' },
+      { word: 'SUNDAE', hint: 'Ice cream dessert' },
+      { word: 'FLOAT', hint: 'Ice cream soda drink' },
+      { word: 'PIZZA', hint: 'Cheesy slice pie' },
+      { word: 'NACHOS', hint: 'Tortilla chips with cheese' },
+      { word: 'POPCORN', hint: 'Buttery movie snack' },
+      { word: 'PRETZEL', hint: 'Baked twisted snack' },
+      { word: 'BAGEL', hint: 'Chewy ring bread' },
+      { word: 'MUFFIN', hint: 'Sweet baked cupcake' }
     ];
+
     let currentWordObj = wordList[0];
+    let wordScore = 0;
+    let wordTimer = 30;
+    let wordTimerInterval = null;
 
     function startWordGame() {
       document.getElementById('game-menu').style.display = 'none';
       document.getElementById('word-game-container').style.display = 'block';
+      wordScore = 0;
+      wordTimer = 30;
+      document.getElementById('word-score').innerText = wordScore;
+      document.getElementById('word-timer').innerText = wordTimer;
       document.getElementById('word-feedback').innerText = '';
       document.getElementById('word-guess-input').value = '';
       loadNewWord();
+
+      if(wordTimerInterval) clearInterval(wordTimerInterval);
+      wordTimerInterval = setInterval(() => {
+        wordTimer--;
+        document.getElementById('word-timer').innerText = wordTimer;
+        if(wordTimer <= 0) {
+          clearInterval(wordTimerInterval);
+          alert(`⏰ Time's up! You unscrambled ${wordScore} words correctly! 🎉`);
+          backToGameMenu();
+        }
+      }, 1000);
+    }
+
+    function stopWordTimer() {
+      if(wordTimerInterval) clearInterval(wordTimerInterval);
     }
 
     function loadNewWord() {
@@ -593,14 +670,16 @@
     function checkWordGuess() {
       let userGuess = document.getElementById('word-guess-input').value.trim().toUpperCase();
       if(userGuess === currentWordObj.word) {
-        document.getElementById('word-feedback').innerText = '✨ Correct! Great job!';
-        confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+        wordScore += 1;
+        document.getElementById('word-score').innerText = wordScore;
+        document.getElementById('word-feedback').innerText = '✨ Correct! +1 Point!';
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.6 } });
         playPopSFX();
         setTimeout(() => {
           document.getElementById('word-guess-input').value = '';
           document.getElementById('word-feedback').innerText = '';
           loadNewWord();
-        }, 1500);
+        }, 1000);
       } else {
         document.getElementById('word-feedback').innerText = '❌ Try again!';
       }
