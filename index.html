@@ -45,7 +45,7 @@
       min-height: 100vh;
     }
 
-    /* --- LOADING SCREEN ANIMATION STYLES --- */
+    /* --- ROUNDED SQUARE LOADING SCREEN STYLES --- */
     #loading-screen {
       position: fixed;
       inset: 0;
@@ -55,19 +55,20 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.6s ease;
     }
     .loader-icon-wrapper {
       position: relative;
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
       border-radius: 28px;
       background: white;
       border: 4px solid var(--primary);
-      box-shadow: 0 8px 25px rgba(255, 87, 34, 0.3);
+      box-shadow: 0 10px 30px rgba(255, 87, 34, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
       animation: initPulse 1.6s infinite ease-in-out;
     }
     .loader-icon-wrapper img {
@@ -78,21 +79,20 @@
     }
     .loader-glow {
       position: absolute;
-      inset: -12px;
+      inset: -10px;
       border-radius: 34px;
       border: 3px dashed var(--secondary);
-      animation: initSpin 3.5s linear infinite;
+      animation: initSpin 4s linear infinite;
     }
     @keyframes initPulse {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4); }
-      50% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(255, 87, 34, 0); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 87, 34, 0); }
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
     }
     @keyframes initSpin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    /* -------------------------------------- */
 
     .app-container {
       width: 100%;
@@ -362,6 +362,7 @@
       
       <div id="game-menu">
         <button class="game-menu-btn" onclick="startSpinGame()">🎡 Daily Lucky Spin<br><span style="font-size:11px; font-weight:normal; color:#795548;">Spin once a day for bonus stamps!</span></button>
+        <button class="game-menu-btn" onclick="startScratchGame()">🎫 Daily Scratch & Win<br><span style="font-size:11px; font-weight:normal; color:#795548;">Scratch the card to reveal bonus prizes!</span></button>
         <button class="game-menu-btn" onclick="startWordGame()">🔤 Guess That Word (Timed!)<br><span style="font-size:11px; font-weight:normal; color:#795548;">Unscramble 50+ street food words!</span></button>
         <button class="btn" style="background:#757575; margin-top:12px;" onclick="closeGameModal()">Close Games</button>
       </div>
@@ -378,7 +379,26 @@
         <button class="btn" style="background:#757575; margin-top:10px;" onclick="backToGameMenu()">Back to Menu</button>
       </div>
 
-      <!-- Game 2: Guess That Word -->
+      <!-- Game 2: Touchscreen Scratch & Win -->
+      <div id="scratch-game-container" style="display:none;">
+        <div class="game-box">
+          <h3 style="margin:0 0 4px 0; color:#E64A19;">Scratch & Win 🎫</h3>
+          <p style="font-size:12px; color:#555;" id="scratch-instruction">Scratch off the card with your finger!</p>
+          
+          <div style="position: relative; width: 240px; height: 130px; margin: 14px auto; border-radius: 16px; overflow: hidden; box-shadow: 0 6px 14px rgba(0,0,0,0.15); border: 3px solid #FFB300;">
+            <div id="scratch-prize-layer" style="position: absolute; inset: 0; background: linear-gradient(135deg, #FFE082, #FFB300); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; text-align: center;">
+              <div style="font-size: 32px;" id="scratch-prize-emoji">🎁</div>
+              <div style="font-size: 15px; font-weight: 900; color: #3E2723; margin-top: 4px;" id="scratch-prize-text">Scratch to Reveal!</div>
+            </div>
+            <canvas id="scratch-canvas" width="240" height="130" style="position: absolute; inset: 0; cursor: pointer; touch-action: none;"></canvas>
+          </div>
+
+          <div style="font-size: 13px; font-weight: 800; color: #388E3C; min-height: 20px;" id="scratch-result-msg"></div>
+        </div>
+        <button class="btn" style="background:#757575; margin-top:10px;" onclick="backToGameMenu()">Back to Menu</button>
+      </div>
+
+      <!-- Game 3: Guess That Word -->
       <div id="word-game-container" style="display:none;">
         <div class="game-box">
           <h3 style="margin:0 0 4px 0; color:#E64A19;">Guess That Word</h3>
@@ -408,7 +428,7 @@
   </div>
 
   <script>
-    // --- LOADING SCREEN INITIATING ANIMATION TEXT ---
+    // --- 5-SECOND LOADING & INITIATING TIMER ---
     const initText = document.getElementById('init-text');
     let dotState = 0;
     const dotInterval = setInterval(() => {
@@ -424,7 +444,7 @@
           loader.style.opacity = '0';
           setTimeout(() => loader.style.display = 'none', 600);
         }
-      }, 5000);
+      }, 5000); // Enforced 5-second loading overlay
     });
 
     const firebaseConfig = {
@@ -580,11 +600,12 @@
     function backToGameMenu() {
       stopWordTimer();
       document.getElementById('spin-game-container').style.display = 'none';
+      document.getElementById('scratch-game-container').style.display = 'none';
       document.getElementById('word-game-container').style.display = 'none';
       document.getElementById('game-menu').style.display = 'block';
     }
 
-    // Daily Lucky Spin
+    // Game 1: Daily Lucky Spin
     const spinRewards = [
       { text: "+1 Bonus Stamp! 🍢", stamps: 1 },
       { text: "Aww, Try Again Tomorrow! 😅", stamps: 0 },
@@ -647,7 +668,124 @@
       }, 1000);
     }
 
-    // Guess That Word
+    // Game 2: Touchscreen Scratch & Win
+    const scratchPrizes = [
+      { text: "+1 Bonus Stamp! 🍢", stamps: 1, emoji: "🍢" },
+      { text: "Try Again Tomorrow! 😅", stamps: 0, emoji: "❌" },
+      { text: "+2 Super Stamps! 🌟", stamps: 2, emoji: "🌟" },
+      { text: "Free Extra Dip Coupon! 🧀", stamps: 0, emoji: "🧀" },
+      { text: "+1 Bonus Stamp! 🍢", stamps: 1, emoji: "🍢" }
+    ];
+
+    let isScratching = false;
+    let currentScratchPrize = null;
+    let scratchRevealed = false;
+
+    function startScratchGame() {
+      document.getElementById('game-menu').style.display = 'none';
+      document.getElementById('scratch-game-container').style.display = 'block';
+      document.getElementById('scratch-result-msg').innerText = '';
+      scratchRevealed = false;
+
+      const lastScratchDate = localStorage.getItem('inato_last_scratch_' + custId);
+      const today = new Date().toDateString();
+
+      const canvas = document.getElementById('scratch-canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (lastScratchDate === today) {
+        document.getElementById('scratch-instruction').innerText = "You already scratched today! Come back tomorrow! ⏰";
+        ctx.fillStyle = '#B0BEC5';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#37474F';
+        ctx.font = 'bold 14px Segoe UI';
+        ctx.textAlign = 'center';
+        ctx.fillText('Already Used Today ⏰', canvas.width / 2, canvas.height / 2 + 5);
+        return;
+      }
+
+      document.getElementById('scratch-instruction').innerText = "Scratch off the card with your finger!";
+      
+      currentScratchPrize = scratchPrizes[Math.floor(Math.random() * scratchPrizes.length)];
+      document.getElementById('scratch-prize-emoji').innerText = currentScratchPrize.emoji;
+      document.getElementById('scratch-prize-text').innerText = currentScratchPrize.text;
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = '#CFD8DC';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#78909C';
+      ctx.font = 'bold 16px Segoe UI';
+      ctx.textAlign = 'center';
+      ctx.fillText('✨ SCRATCH HERE ✨', canvas.width / 2, canvas.height / 2 + 6);
+
+      setupCanvasEvents(canvas, ctx);
+    }
+
+    function setupCanvasEvents(canvas, ctx) {
+      const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      };
+
+      const scratch = (e) => {
+        if (!isScratching || scratchRevealed) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+        ctx.fill();
+
+        checkScratchPercentage(canvas, ctx);
+      };
+
+      canvas.onmousedown = (e) => { isScratching = true; scratch(e); };
+      canvas.onmousemove = scratch;
+      canvas.onmouseup = () => { isScratching = false; };
+      
+      canvas.ontouchstart = (e) => { isScratching = true; scratch(e); };
+      canvas.ontouchmove = scratch;
+      canvas.ontouchend = () => { isScratching = false; };
+    }
+
+    function checkScratchPercentage(canvas, ctx) {
+      if (scratchRevealed) return;
+
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let clearedPixels = 0;
+      for (let i = 3; i < imgData.data.length; i += 4) {
+        if (imgData.data[i] === 0) clearedPixels++;
+      }
+
+      const percentCleared = (clearedPixels / (canvas.width * canvas.height)) * 100;
+
+      if (percentCleared > 45) {
+        scratchRevealed = true;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const today = new Date().toDateString();
+        localStorage.setItem('inato_last_scratch_' + custId, today);
+        
+        document.getElementById('scratch-result-msg').innerText = "🎉 Prize Unlocked: " + currentScratchPrize.text;
+
+        if (currentScratchPrize.stamps > 0) {
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+          playPopSFX();
+          
+          db.ref('stamps/' + custId).once('value', (snapshot) => {
+            let currentStamps = snapshot.val() || 0;
+            let newStamps = Math.min(STAMPS_REQUIRED, currentStamps + currentScratchPrize.stamps);
+            db.ref('stamps/' + custId).set(newStamps);
+          });
+        }
+      }
+    }
+
+    // Game 3: Guess That Word
     const wordList = [
       { word: 'KIKIAM', hint: 'Pinoy fried fish/meat roll stick' },
       { word: 'SIOMAI', hint: 'Steamed dumpling favorite' },
