@@ -378,7 +378,7 @@
       <p style="font-size:13px; color:#666; margin-bottom:16px;">Play games & win daily bonus stamps!</p>
       
       <div id="game-menu">
-        <button class="game-menu-btn" onclick="startSpinGame()">🎡 Daily Lucky Spin (5% Win Rate)<br><span style="font-size:11px; font-weight:normal; color:#795548;">Spin once a day for a rare bonus stamp!</span></button>
+        <button class="game-menu-btn" onclick="startSpinGame()">🎡 Daily Lucky Spin<br><span style="font-size:11px; font-weight:normal; color:#795548;">Spin once a day for a rare bonus stamp!</span></button>
         <button class="game-menu-btn" onclick="startWordGame()">🔤 Guess That Word (Timed!)<br><span style="font-size:11px; font-weight:normal; color:#795548;">Unscramble 50+ street food words!</span></button>
         <button class="btn" style="background:#757575; margin-top:12px;" onclick="closeGameModal()">Close Games</button>
       </div>
@@ -387,7 +387,7 @@
       <div id="spin-game-container" style="display:none;">
         <div class="game-box">
           <h3 style="margin:0 0 4px 0; color:#E64A19;">Daily Lucky Spin 🎡</h3>
-          <p style="font-size:12px; color:#555;" id="spin-instruction">1 spin allowed per day! (5% chance to win)</p>
+          <p style="font-size:12px; color:#555;" id="spin-instruction">1 spin allowed per day!</p>
           <div style="font-size: 48px; margin: 16px 0; display: inline-block; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="spin-wheel-icon">🎡</div>
           <div style="font-size: 15px; font-weight: 900; color: var(--primary); margin-bottom: 14px;" id="spin-result-text">Ready to Spin?</div>
           <button class="btn" id="spin-btn" style="background:#FF9800; padding:12px; font-size:16px;" onclick="spinWheel()">SPIN NOW!</button>
@@ -419,7 +419,7 @@
       <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Watch fun food videos while waiting for your order!</p>
       
       <div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 6px 16px rgba(0,0,0,0.2);">
-        <iframe id="video-frame" style="position: absolute; top:0; left:0; width:100%; height:100%; border:0;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe id="video-frame" style="position: absolute; top:0; left:0; width:100%; height:100%; border:0;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
       </div>
 
       <div style="display: flex; gap: 6px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px;">
@@ -608,14 +608,15 @@
     function closeQRModal() { document.getElementById('qr-modal').style.display = 'none'; }
     function closeRewardModal() { document.getElementById('reward-modal').style.display = 'none'; }
 
-    // --- MINI THEATER CONTROLS ---
+    // --- MINI THEATER CONTROLS (Optimized for reliable playback) ---
     function openTheaterModal() {
       document.getElementById('theater-modal').style.display = 'flex';
       playVideo('w95S8l-_e00');
     }
     function playVideo(youtubeId) {
       const iframe = document.getElementById('video-frame');
-      iframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`;
+      // Added enablejsapi=1 & origin=* to ensure smooth embedding and playback across devices
+      iframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&enablejsapi=1&origin=` + encodeURIComponent(window.location.origin);
     }
     function closeTheaterModal() {
       const iframe = document.getElementById('video-frame');
